@@ -131,6 +131,7 @@ class EventHandler
     void leaveMenuMode();
     bool enterDebugMode();
     void leaveDebugMode();
+    bool enterDebugCliMode();
     void enterTimeMachineMenuMode(uInt32 numWinds, bool unwind);
 
     /**

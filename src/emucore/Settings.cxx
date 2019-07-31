@@ -523,6 +523,7 @@ void Settings::usage() const
     << "   -dbg.uhex      <0|1>          lower-/uppercase HEX display\n"
     << "   -break         <address>      Set a breakpoint at 'address'\n"
     << "   -debug                        Start in debugger mode\n"
+    << "   -debugcli                     Start in CLI debugger mode\n"
     << endl
     << "   -bs          <arg>          Sets the 'Cartridge.Type' (bankswitch) property\n"
     << "   -type        <arg>          Same as using -bs\n"

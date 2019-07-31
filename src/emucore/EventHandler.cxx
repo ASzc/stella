@@ -946,6 +946,8 @@ void EventHandler::handleConsoleStartupEvents()
 #ifdef DEBUGGER_SUPPORT
   if(myOSystem.settings().getBool("debug"))
     enterDebugMode();
+  if(myOSystem.settings().getBool("debugcli"))
+    enterDebugCliMode();
 #endif
 }
 
@@ -1483,6 +1485,27 @@ void EventHandler::leaveDebugMode()
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+bool EventHandler::enterDebugCliMode()
+{
+#ifdef DEBUGGER_SUPPORT
+  if(myState == EventHandlerState::DEBUGGERCLI || !myOSystem.hasConsole())
+    return false;
+
+  myOSystem.debugger().setStartState();
+  setState(EventHandlerState::DEBUGGERCLI);
+
+  myOSystem.sound().mute(true);
+
+  myOSystem.debugger().startCli();
+
+  // No matching EventHandler::leaveDebugCliMode(), because the only way to
+  // leave is via Event::ExitMode
+
+#endif
+  return true;
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void EventHandler::enterTimeMachineMenuMode(uInt32 numWinds, bool unwind)
 {
 #ifdef GUI_SUPPORT
@@ -1549,6 +1572,9 @@ void EventHandler::setState(EventHandlerState state)
     case EventHandlerState::DEBUGGER:
       myOverlay = &myOSystem.debugger();
       enableTextEvents(true);
+      break;
+
+    case EventHandlerState::DEBUGGERCLI:
       break;
   #endif
 

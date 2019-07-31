@@ -64,6 +64,7 @@ Debugger::Debugger(OSystem& osystem, Console& console)
     myConsole(console),
     mySystem(console.system()),
     myDialog(nullptr),
+    myReplWorker{},
     myWidth(DebuggerDialog::kSmallFontMinW),
     myHeight(DebuggerDialog::kSmallFontMinH)
 {
@@ -151,10 +152,51 @@ bool Debugger::startWithFatalError(const string& message)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void Debugger::startCli()
+{
+    myReplWorker = std::thread{&Debugger::replWorker, this};
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void Debugger::replWorker()
+{
+  std::cout << string("Stella ") + STELLA_VERSION + "\n> ";
+
+  StringList history;
+  std::cout << autoExec(&history);
+
+  std::cout << cartDebug().loadConfigFile() << "\n";
+  std::cout << cartDebug().loadListFile()  << "\n";
+  std::cout << cartDebug().loadSymbolFile() << "\n";
+
+  // Connect myParser as stdio REPL, i.e. stdio replaces PromptWidget.
+  string command;
+  while(std::cin)
+  {
+    std::cout << "> " << std::flush;
+    if(!getline(std::cin, command))
+      break;
+
+    string result = myParser->run(command);
+
+    if (result == "_EXIT_DEBUGGER")
+      break;
+
+    std::cout << result << "\n" << std::flush;
+  }
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Debugger::quit(bool exitrom)
 {
   if(exitrom)
+  {
+    // Request myReplWorker to terminate
+    fclose(stdin);
+    myReplWorker.join();
+
     myOSystem.eventHandler().handleEvent(Event::ExitMode, true);
+  }
   else
   {
     myOSystem.eventHandler().leaveDebugMode();

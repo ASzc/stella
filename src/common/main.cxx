@@ -95,7 +95,7 @@ void parseCommandLine(int ac, char* av[],
         continue;
       }
       // Take care of arguments without an option that are needed globally
-      if(key == "debug" || key == "holdselect" || key == "holdreset")
+      if(key == "debug" || key == "debugcli" || key == "holdselect" || key == "holdreset")
       {
         globalOpts[key] = true;
         continue;

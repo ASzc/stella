@@ -27,6 +27,7 @@ enum class EventHandlerState {
   OPTIONSMENU,
   CMDMENU,
   DEBUGGER,
+  DEBUGGERCLI,
   NONE
 };
 

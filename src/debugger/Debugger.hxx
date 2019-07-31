@@ -42,6 +42,7 @@ class DebuggerParser;
 class RewindManager;
 
 #include <map>
+#include <thread>
 
 #include "Base.hxx"
 #include "DialogContainer.hxx"
@@ -94,6 +95,9 @@ class Debugger : public DialogContainer
     */
     bool start(const string& message = "", int address = -1, bool read = true);
     bool startWithFatalError(const string& message = "");
+
+    void startCli();
+    void replWorker();
 
     /**
       Wrapper method for EventHandler::leaveDebugMode() for those classes
@@ -314,6 +318,8 @@ class Debugger : public DialogContainer
     unique_ptr<TIADebug>       myTiaDebug;
 
     static Debugger* myStaticDebugger;
+
+    std::thread myReplWorker;
 
     FunctionMap myFunctions;
     FunctionDefMap myFunctionDefs;
